@@ -14,8 +14,6 @@
 #ifndef DRIVERS_DISPLAYINTERFACE_H_
 #define DRIVERS_DISPLAYINTERFACE_H_
 
-#include "stdint.h"
-
 class DisplayInterface
 {
 
@@ -23,28 +21,22 @@ public:
 
 	virtual ~DisplayInterface(void) { }
 
-#if MBED_USE_LVGL
-
-	virtual void write_command(uint8_t command) = 0;
+	/**
+	 * Writes a buffer to the display interface
+	 * @param[in] buffer pointer to buffer of bytes to transmit
+	 * @param[in] num_cmd_bytes Number of command bytes at beginning of buffer
+	 * @param[in] buf_len Total number of bytes in payload buffer
+	 */
+	virtual void write(const uint8_t* buffer, uint32_t num_cmd_bytes, uint32_t buf_len) = 0;
 
 	/**
-	 * Writes a command with parameters
-	 * @param[in] command command byte to send
-	 * @param[in] params Pointer to parameter buffer
-	 * @param[in] num_params number of parameter bytes to send
+	 * Reads a buffer from the display interface
+	 * @note: May not be available
+	 * @param[out] buffer to fill with data
+	 * @param[in] size Size of buffer
+	 * @retval actual number of bytes read (may always be 0 if unsupported)
 	 */
-	virtual void write_command_with_params(uint8_t command, const uint8_t* params,
-			uint8_t num_params) = 0;
-
-	virtual void write_data(const uint8_t* data, uint32_t length) = 0;
-
-	virtual void write_data(const uint16_t* data, uint32_t length) = 0;
-
-	virtual void write_data(const uint32_t* data, uint32_t length) = 0;
-
-	virtual uint8_t read(void) = 0;
-
-#endif
+	virtual uint8_t read(uint8_t* buffer, uint32_t size) = 0;
 
 };
 
