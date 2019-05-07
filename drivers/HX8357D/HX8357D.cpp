@@ -265,39 +265,39 @@ void HX8357D::set_com(uint8_t mode) {
 	_interface.write_data(&mode, 1 );
 }
 
-void HX8357D::flush(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
-		const lv_color_t* color_p) {
-	this->set_column_address(x1, x2);
-	this->set_row_address(y1, y2);
-
-	this->write_memory_start();
-
-	//_interface.write_data((uint16_t*) color_p, (x2-x1)*(y2-y1));
-
-	// TODO - Speed this up using DMA!
-	// TODO - Make sure initialization is working correctly
-	// TODO - Make sure the D/C pin is toggling fast enough (change it to high speed)
-	int32_t x, y;
-	uint16_t* ptr = (uint16_t*) color_p;
-	for(y = y1; y <= y2; y++)
-	{
-		for(x = x1; x <= x2; x++)
-		{
-			uint8_t pix_color = 0;
-			pix_color = (color_p->red << 3) | ((color_p->green & 0x38) >> 3);
-			_interface.write_data(&pix_color, 1);
-			pix_color = ((color_p->green & 0x7) << 5) | (color_p->blue);
-			_interface.write_data(&pix_color, 1);
-
-			color_p = (const lv_color_t*) ++ptr;
-		}
-	}
-}
-
-void HX8357D::map(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
-		const lv_color_t* color_p) {
-}
-
-void HX8357D::fill(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
-		lv_color_t color) {
-}
+//void HX8357D::flush(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
+//		const lv_color_t* color_p) {
+//	this->set_column_address(x1, x2);
+//	this->set_row_address(y1, y2);
+//
+//	this->write_memory_start();
+//
+//	//_interface.write_data((uint16_t*) color_p, (x2-x1)*(y2-y1));
+//
+//	// TODO - Speed this up using DMA!
+//	// TODO - Make sure initialization is working correctly
+//	// TODO - Make sure the D/C pin is toggling fast enough (change it to high speed)
+//	int32_t x, y;
+//	uint16_t* ptr = (uint16_t*) color_p;
+//	for(y = y1; y <= y2; y++)
+//	{
+//		for(x = x1; x <= x2; x++)
+//		{
+//			uint8_t pix_color = 0;
+//			pix_color = (color_p->red << 3) | ((color_p->green & 0x38) >> 3);
+//			_interface.write_data(&pix_color, 1);
+//			pix_color = ((color_p->green & 0x7) << 5) | (color_p->blue);
+//			_interface.write_data(&pix_color, 1);
+//
+//			color_p = (const lv_color_t*) ++ptr;
+//		}
+//	}
+//}
+//
+//void HX8357D::map(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
+//		const lv_color_t* color_p) {
+//}
+//
+//void HX8357D::fill(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
+//		lv_color_t color) {
+//}
