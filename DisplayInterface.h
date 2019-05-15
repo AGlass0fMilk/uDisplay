@@ -11,6 +11,8 @@
  *      Author: gdbeckstein
  */
 
+#include <stdint.h>
+
 #ifndef DRIVERS_DISPLAYINTERFACE_H_
 #define DRIVERS_DISPLAYINTERFACE_H_
 
@@ -20,6 +22,13 @@ class DisplayInterface
 public:
 
 	virtual ~DisplayInterface(void) { }
+
+	/**
+	 * Writes a single-byte to the display interface
+	 * @param[in] data Single byte to send to the display interface
+	 * @param[in] is_cmd Is the byte a command (true) or data (false)?
+	 */
+	virtual void write(uint8_t data, bool is_cmd = true) = 0;
 
 	/**
 	 * Writes a buffer to the display interface
