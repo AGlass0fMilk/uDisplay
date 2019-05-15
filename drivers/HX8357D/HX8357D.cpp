@@ -101,49 +101,54 @@ void HX8357D::init(void) {
 }
 
 void HX8357D::reset(void) {
-	_interface.write_command(HX8357_SWRESET);
+	_interface.write(HX8357_SWRESET);
 }
 
 uint32_t HX8357D::get_id(void) {
 	uint32_t id = 0;
-	_interface.write_command(HX8357_RDDID);
-	id |= (_interface.read() << 16);
-	id |= (_interface.read() << 8);
-	id |= (_interface.read());
+	_interface.write(HX8357_RDDID);
+	uint8_t buf[3];
+	_interface.read(buf, 3);
+	id |= (buf[0] << 16);
+	id |= (buf[1] << 8);
+	id |= (buf[2]);
 	return id;
 }
 
 uint8_t HX8357D::get_power_mode(void) {
-	_interface.write_command(HX8357B_RDPOWMODE);
-	return _interface.read();
+	_interface.write(HX8357B_RDPOWMODE);
+	uint8_t buf;
+	_interface.read(&buf, 1);
+	return &buf;
 }
 
 uint8_t HX8357D::get_address_mode(void) {
-	_interface.write_command(HX8357B_RDMADCTL);
-	return _interface.read();
+	_interface.write(HX8357B_RDMADCTL);
+	uint8_t buf;
+	_interface.read(&buf, 1);
+	return buf;
 }
 
 void HX8357D::invert_on(void) {
-
-	_interface.write_command(HX8357_INVON);
+	_interface.write(HX8357_INVON);
 }
 
 void HX8357D::invert_off(void) {
 
-	_interface.write_command(HX8357_INVOFF);
+	_interface.write(HX8357_INVOFF);
 }
 
 void HX8357D::set_gamma_curve(uint8_t curve) {
-	_interface.write_command(HX8357_GAMSET);
-	_interface.write_data(&curve, 1);
+	_interface.write(HX8357_GAMSET);
+	_interface.write(&curve, 0, 1);
 }
 
 void HX8357D::display_on(void) {
-	_interface.write_command(HX8357_DISPON);
+	_interface.write(HX8357_DISPON);
 }
 
 void HX8357D::display_off(void) {
-	_interface.write_command(HX8357_DISPOFF);
+	_interface.write(HX8357_DISPOFF);
 }
 
 void HX8357D::set_column_address(uint16_t col_start, uint16_t col_end) {
@@ -155,9 +160,8 @@ void HX8357D::set_column_address(uint16_t col_start, uint16_t col_end) {
 			(uint8_t)((col_end & 0x00FF))
 	};
 
-	_interface.write_command(HX8357_CASET);
-
-	_interface.write_data(cmd, 4);
+	_interface.write(HX8357_CASET);
+	_interface.write(cmd, 0, 4);
 
 }
 
@@ -169,48 +173,48 @@ void HX8357D::set_row_address(uint16_t row_start, uint16_t row_end) {
 			(uint8_t)((row_end & 0x00FF))
 	};
 
-	_interface.write_command(HX8357_PASET);
+	_interface.write(HX8357_PASET);
 
-	_interface.write_data(cmd, 4);
+	_interface.write(cmd, 0, 4);
 }
 
 void HX8357D::write_memory_start() {
-	_interface.write_command(HX8357_RAMWR);
+	_interface.write(HX8357_RAMWR);
 }
 
 void HX8357D::read_memory_start() {
-	_interface.write_command(HX8357_RAMRD);
+	_interface.write(HX8357_RAMRD);
 }
 
 void HX8357D::set_tear_on() {
-	_interface.write_command(HX8357_TEON);
+	_interface.write(HX8357_TEON);
 }
 
 void HX8357D::set_tear_off() {
-	_interface.write_command(HX8357_TEOFF);
+	_interface.write(HX8357_TEOFF);
 }
 
 void HX8357D::set_address_mode(uint8_t mode) {
-	_interface.write_command(HX8357_MADCTL);
-	_interface.write_data(&mode, 1);
+	_interface.write(HX8357_MADCTL);
+	_interface.write(&mode, 0, 1);
 
 }
 
 void HX8357D::enter_idle_mode() {
-	_interface.write_command(HX8357_IDMON);
+	_interface.write(HX8357_IDMON);
 
 }
 
 void HX8357D::exit_idle_mode() {
-	_interface.write_command(HX8357_IDMOFF);
+	_interface.write(HX8357_IDMOFF);
 }
 
 void HX8357D::enter_sleep_mode() {
-	_interface.write_command(HX8357_SLPIN);
+	_interface.write(HX8357_SLPIN);
 }
 
 void HX8357D::exit_sleep_mode() {
-	_interface.write_command(HX8357_SLPOUT);
+	_interface.write(HX8357_SLPOUT);
 }
 
 void HX8357D::set_extc() {
@@ -220,49 +224,49 @@ void HX8357D::set_extc() {
 			0xFF, 0x83, 0x57
 	};
 
-	_interface.write_command(HX8357_PASET);
+	_interface.write(HX8357_PASET);
 
-	_interface.write_data(cmd, 3);
+	_interface.write(cmd, 0, 3);
 }
 
 void HX8357D::set_rgb(uint8_t* mode) {
-	_interface.write_command(HX8357_SETRGB);
-	_interface.write_data(mode, 4);
+	_interface.write(HX8357_SETRGB);
+	_interface.write(mode, 0, 4);
 }
 
 void HX8357D::set_osc(uint8_t mode) {
-	_interface.write_command(HX8357_SETOSC);
-	_interface.write_data(&mode, 1);
+	_interface.write(HX8357_SETOSC);
+	_interface.write(&mode, 0, 1);
 }
 
 void HX8357D::set_panel(uint8_t mode) {
-	_interface.write_command(HX8357_SETPANEL);
-	_interface.write_data(&mode, 1);
+	_interface.write(HX8357_SETPANEL);
+	_interface.write(&mode, 0, 1);
 }
 
 void HX8357D::set_power(uint8_t* mode) {
-	_interface.write_command(HX8357_SETPWR1);
-	_interface.write_data(mode, 7);
+	_interface.write(HX8357_SETPWR1);
+	_interface.write(mode, 0, 7);
 }
 
 void HX8357D::set_stba(uint8_t* mode) {
-	_interface.write_command(HX8357D_SETSTBA);
-	_interface.write_data(mode, 6);
+	_interface.write(HX8357D_SETSTBA);
+	_interface.write(mode, 0, 6);
 }
 
 void HX8357D::set_cyc(uint8_t* mode) {
-	_interface.write_command(HX8357D_SETCYC);
-	_interface.write_data(mode, 7);
+	_interface.write(HX8357D_SETCYC);
+	_interface.write(mode, 0, 7);
 }
 
 void HX8357D::set_color_mode(uint8_t mode) {
-	_interface.write_command(HX8357_COLMOD);
-	_interface.write_data(&mode, 1);
+	_interface.write(HX8357_COLMOD);
+	_interface.write(&mode, 0, 1);
 }
 
 void HX8357D::set_com(uint8_t mode) {
-	_interface.write_command(HX8357D_SETCOM);
-	_interface.write_data(&mode, 1 );
+	_interface.write(HX8357D_SETCOM);
+	_interface.write(&mode, 0, 1);
 }
 
 //void HX8357D::flush(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
