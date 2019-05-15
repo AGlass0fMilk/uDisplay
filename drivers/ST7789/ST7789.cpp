@@ -162,7 +162,7 @@ void ST7789Display::tearing_effect_off(void) {
 void ST7789Display::tearing_effect_on(uint8_t mode) {
 	uint8_t buf[2] = {
 			ST77XX_TEON,
-			(mode & 0x1)
+			(uint8_t)(mode & 0x1)
 	};
 	_interface.write(buf, 1, 2);
 }

@@ -119,7 +119,7 @@ uint8_t HX8357D::get_power_mode(void) {
 	_interface.write(HX8357B_RDPOWMODE);
 	uint8_t buf;
 	_interface.read(&buf, 1);
-	return &buf;
+	return buf;
 }
 
 uint8_t HX8357D::get_address_mode(void) {

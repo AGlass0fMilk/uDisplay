@@ -161,11 +161,7 @@ class ST7789Display : public DisplayDriver
 //		virtual void gpu_fill(lv_color_t* dest, uint32_t length, lv_color_t color) { }
 //
 //#endif
-#endif
-
-	private:
-
-
+//#endif
 
 	private:
 
