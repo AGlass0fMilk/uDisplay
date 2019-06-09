@@ -57,6 +57,11 @@ class ST7789Display : public DisplayDriver
 		 */
 		void start_ram_write(void);
 
+		/**
+		 * Write data into RAM
+		 */
+		void write_data(uint8_t* data, int32_t len);
+
 		// Not supported currently
 		//void start_ram_read(void);
 
