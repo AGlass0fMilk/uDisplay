@@ -109,6 +109,10 @@ void ST7789Display::start_ram_write(void) {
 	_interface.write(ST77XX_RAMWR);
 }
 
+void ST7789Display::write_data(uint8_t* data, int32_t len) {
+	_interface.write(data, 0, len);
+}
+
 void ST7789Display::set_address_mode(uint8_t mode) {
 	uint8_t buf[2] = {
 			(uint8_t)(ST77XX_MADCTL),
