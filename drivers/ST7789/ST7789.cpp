@@ -1,25 +1,20 @@
-/**
- * @file SSD1351.cpp
- * @brief Brief Description
- * 
- * Detailed Description
+/* uDisplay library
+ * Copyright (c) 2018-2019 George "AGlass0fMilk" Beckstein
+ * SPDX-License-Identifier: Apache-2.0
  *
- * Link to [markdown like this](@ref PageTag)
- * Make sure you tag the markdown page like this:
- * # Page title {#PageTag}
- * 
- * <a href='MyPDF.pdf'> Link to PDF documents like this</a>
- * If you add document files, make sure to add them into a directory inside a "docs" folder
- * And then run hud-devices/tools/copy-dox-files.py 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * To use images, make sure they're in an "images" folder and follow the doxygen user manual to add images.
- * You must run copy-dox-files.py after adding images as well.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * @copyright Copyright &copy; 2018 Heads Up Display, Inc.
- *
- *  Created on: Jul 25, 2018
- *      Author: gdbeckstein
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 
 #include "ST7789.h"
 
