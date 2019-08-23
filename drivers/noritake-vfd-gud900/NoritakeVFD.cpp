@@ -447,9 +447,10 @@ void NoritakeVFD::draw_dot_unit_image(unsigned x, uint8_t y, unsigned width,
 	this->send_xy1(x, y);
 	this->send_xy1(width, height);
 	_interface.write(0x01);
-	for (unsigned i = 0; i < (height / 8) * width; i++) {
-		_interface.write(data[i]);
-	}
+	_interface.write(data, 0, ((height / 8) * width));
+//	for (unsigned i = 0; i < (height / 8) * width; i++) {
+//		_interface.write(data[i]);
+//	}
 }
 
 void NoritakeVFD::print_dot_unit_char(unsigned x, uint8_t y, uint8_t* buffer,
@@ -581,58 +582,3 @@ void NoritakeVFD::IO_port_input() {
 	_interface.write(0x00);
 }
 
-inline uint16_t get_byte_index(int32_t x, int32_t y)
-{
-	return x + ((y >> 3) << 7);
-}
-
-inline uint8_t get_bit_index(int32_t y)
-{
-	return y % 8;
-}
-//
-//void NoritakeVFD::set_pixel(int32_t x, int32_t y, lv_color_t color)
-//{
-//	// Calculate the byte/bit location in the display RAM
-//	uint16_t byte_idx = get_byte_index(x, y);
-//	uint8_t bit_idx = get_bit_index(y);
-//
-//	// Invalidate the page
-//	//page_valid[y >> 3] = false;
-//
-//	// Set clear the bit accordingly
-//	if(color.full)
-//		_buf[byte_idx] |= (1 << bit_idx);
-//	else
-//		_buf[byte_idx] &= ~(1 << bit_idx);
-//}
-//
-//void NoritakeVFD::flush(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
-//		const lv_color_t* color_p) {
-//
-//	// Copy it over to the internal bitwise buffer
-//	int32_t x, y;
-//	for(y = y1; y <= y2; y++)
-//	{
-//		for(x = x1; x <= x2; x++)
-//		{
-//			set_pixel(x, y, *color_p);
-//
-//			color_p++;
-//		}
-//	}
-//
-//	draw_dot_unit_image(0, 0, 128, 32, _buf);
-//
-//	// Flush the internal buffer
-//	this->flush_ready();
-//
-//}
-//
-//void NoritakeVFD::map(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
-//		const lv_color_t* color_p) {
-//}
-//
-//void NoritakeVFD::fill(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
-//		lv_color_t color) {
-//}
