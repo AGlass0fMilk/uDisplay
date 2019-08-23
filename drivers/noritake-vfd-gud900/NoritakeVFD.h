@@ -733,15 +733,8 @@ class NoritakeVFD : public DisplayDriver
 
 	protected:
 
-//		void set_pixel(int32_t x, int32_t y, lv_color_t color);
-
-	protected:
-
 		/** The height and width of the display (in pixels) and the number of lines */
 		uint32_t _height, _width, _lines;
-
-		/** Internal buffer for bitwise image transfer */
-		uint8_t _buf[512];
 
 		/** Reset pin */
 		mbed::DigitalOut* _reset;
