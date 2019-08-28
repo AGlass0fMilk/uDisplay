@@ -12,6 +12,8 @@
 #include "platform/mbed_assert.h"
 #include "platform/Callback.h"
 
+#include "rtos/EventFlags.h"
+
 #include "nrfx_spim.h"
 
 #include "DisplayInterface.h"
@@ -21,6 +23,7 @@
 static const nrfx_spim_t m_spi_master_3 = NRFX_SPIM_INSTANCE(3);
 
 extern "C" {
+	void nrfx_spim_3_irq_handler(void);
 	void spim3_event_handler(nrfx_spim_evt_t const * p_event, void * p_context);
 }
 
@@ -46,12 +49,21 @@ class DisplaySPI : public DisplayInterface
 		 * @param[in] dcx Data/Command pin for interface
 		 */
 		DisplaySPI(PinName mosi, PinName sclk, PinName cs, PinName dcx) :
-			user_callback(NULL) {
+			user_callback(NULL), spim_done_evt() {
+
+			// Install the nrfx driver IRQ
+			NVIC_SetVector(SPIM3_IRQn, (uint32_t)(nrfx_spim_3_irq_handler));
 
 			/**
 			 * Initialize the SPIM3 peripheral
 			 */
-		    nrfx_spim_config_t spi_config = NRFX_SPIM_DEFAULT_CONFIG;
+		    nrfx_spim_config_t spi_config;
+		    spi_config.irq_priority = 7;
+		    spi_config.orc = 0xFF;
+		    spi_config.mode = NRF_SPIM_MODE_0;
+		    spi_config.bit_order = NRF_SPIM_BIT_ORDER_MSB_FIRST;
+		    spi_config.rx_delay = 0x00;
+		    spi_config.ss_duration = 0x00;
 		    spi_config.frequency      = NRF_SPIM_FREQ_8M;
 		    spi_config.ss_pin         = cs;
 		    spi_config.miso_pin       = NRFX_SPIM_PIN_NOT_USED;
@@ -101,9 +113,13 @@ class DisplaySPI : public DisplayInterface
 		 */
 		virtual void write(const uint8_t* buffer, uint32_t num_cmd_bytes, uint32_t buf_len) {
 
-			nrfx_spim_xfer_desc_t xfer_desc = NRFX_SPIM_XFER_TX(buffer, buf_len);
+			nrfx_spim_xfer_desc_t xfer_desc;
+			xfer_desc.p_rx_buffer = NULL;
+			xfer_desc.p_tx_buffer = buffer;
+			xfer_desc.rx_length = 0;
+			xfer_desc.tx_length = buf_len;
 			nrfx_spim_xfer_dcx(&m_spi_master_3, &xfer_desc, 0, num_cmd_bytes);
-
+			//wait_for_xfer_done();
 		}
 
 		/**
@@ -121,6 +137,10 @@ class DisplaySPI : public DisplayInterface
 		 * Private function to be called from C code
 		 */
 		void _spim_event(nrfx_spim_evt_t const* evt) {
+
+			// Signal the SPIM transfer is done
+			spim_done_evt.set(0x1);
+
 			if(this->user_callback) {
 				this->user_callback(evt); // Notify the application
 			}
@@ -128,7 +148,17 @@ class DisplaySPI : public DisplayInterface
 
 	private:
 
+		/**
+		 * Blocks the calling thread until a transfer is done
+		 */
+		void wait_for_xfer_done(void) {
+			spim_done_evt.clear(0x1);
+			spim_done_evt.wait_any(0x1);
+		}
+
 		mbed::Callback<void(nrfx_spim_evt_t const *)> user_callback;
+
+		rtos::EventFlags spim_done_evt;
 
 };
 

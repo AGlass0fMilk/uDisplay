@@ -43,6 +43,8 @@
 #define ST77XX_COLMOD  0x3A
 #define ST77XX_MADCTL  0x36
 
+#define ST77XX_TESCAN  0x44
+
 #define ST77XX_MADCTL_MY  0x80
 #define ST77XX_MADCTL_MX  0x40
 #define ST77XX_MADCTL_MV  0x20

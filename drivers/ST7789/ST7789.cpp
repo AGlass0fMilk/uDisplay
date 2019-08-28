@@ -56,8 +56,9 @@ void ST7789Display::init(void)
 
 	// Set memory access control
 	buf[0] = ST77XX_MADCTL;
-	buf[1] = 0x00;
+	buf[1] = 0x08;
 	_interface.write(buf, 1, 2);
+	wait_ms(10);
 
 	// Set column address
 /*	buf[0] = 0x00; // Start address high byte
@@ -74,8 +75,8 @@ void ST7789Display::init(void)
 	wait_ms(10);
 
 	// Display on
-	_interface.write(ST77XX_DISPON);
-	wait_ms(100);
+	//_interface.write(ST77XX_DISPON);
+	//wait_ms(100);
 
 }
 
@@ -109,8 +110,28 @@ void ST7789Display::start_ram_write(void) {
 	_interface.write(ST77XX_RAMWR);
 }
 
+void ST7789Display::display_on(void) {
+	_interface.write(ST77XX_DISPON);
+}
+
+void ST7789Display::display_off(void) {
+	_interface.write(ST77XX_DISPOFF);
+}
+
 void ST7789Display::write_data(uint8_t* data, int32_t len) {
 	_interface.write(data, 0, len);
+}
+
+void ST7789Display::set_tearing_effect_scanline(uint16_t row) {
+
+	// Set the tearing effect to trigger on the desired row
+	uint8_t buf[3] = {
+			(uint8_t)(ST77XX_TESCAN),
+			(uint8_t)((row & 0xFF)),
+			(uint8_t)((row & 0xFF00) >> 8)
+	};
+
+	_interface.write(buf, 1, 3);
 }
 
 void ST7789Display::set_address_mode(uint8_t mode) {
