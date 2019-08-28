@@ -88,90 +88,58 @@ class SPI4Wire : public DisplayInterface
 		}
 
 		/**
+		 * Writes a single-byte to the display interface
+		 * @param[in] data Single byte to send to the display interface
+		 * @param[in] is_cmd Is the byte a command (true) or data (false)?
+		 */
+		virtual void write(uint8_t data, bool is_cmd = true) {
+			_spi->lock();
+			_chip_select = 0;
+			if(is_cmd) {
+				_data_command = SPI4WIRE_COMMAND_LOGIC_LEVEL;
+			} else {
+				_data_command = SPI4WIRE_DATA_LOGIC_LEVEL;
+			}
+			_spi->write(data);
+			_chip_select = 1;
+			_spi->unlock();
+		}
+
+		/**
+		 * Writes a buffer to the display interface
+		 * @param[in] buffer pointer to buffer of bytes to transmit
+		 * @param[in] num_cmd_bytes Number of command bytes at beginning of buffer
+		 * @param[in] buf_len Total number of bytes in payload buffer
+		 */
+		virtual void write(const uint8_t* buffer, uint32_t num_cmd_bytes, uint32_t buf_len) {
+			_spi->lock();
+			_chip_select = 0;
+			if(num_cmd_bytes) {
+				_data_command = SPI4WIRE_COMMAND_LOGIC_LEVEL;
+				_spi->write((const char*) buffer, num_cmd_bytes, NULL, 0);
+			}
+			_data_command = SPI4WIRE_DATA_LOGIC_LEVEL;
+			_spi->write((const char*)(buffer+num_cmd_bytes), (buf_len - num_cmd_bytes), NULL, 0);
+			_chip_select = 1;
+			_spi->unlock();
+		}
+
+		/**
+		 * Reads a buffer from the display interface
+		 * @note: May not be available
+		 * @param[out] buffer to fill with data
+		 * @param[in] size Size of buffer
+		 * @retval actual number of bytes read (may always be 0 if unsupported)
+		 */
+		virtual uint8_t read(uint8_t* buffer, uint32_t size) { return 0; } // Not supported
+
+		/**
 		 * Sets the frequency of the underlying SPI interface
 		 */
 		void frequency(int hz)
 		{
 			_spi->frequency(hz);
 		}
-
-		/**
-		 * Writes a command byte to the display interface
-		 */
-		virtual void write_command(uint8_t command)
-		{
-			_spi->lock();
-			_chip_select = 0;
-			_data_command = SPI4WIRE_COMMAND_LOGIC_LEVEL;
-			_spi->write(command);
-			_chip_select = 1;
-			_spi->unlock();
-		}
-
-		/**
-		 * Writes a command with parameters
-		 * @param[in] command command byte to send
-		 * @param[in] params Pointer to parameter buffer
-		 * @param[in] num_params number of parameter bytes to send
-		 */
-		virtual void write_command_with_params(uint8_t command, const uint8_t* params,
-				uint8_t num_params)
-		{
-			_spi->lock();
-			_chip_select = 0;
-			_data_command = SPI4WIRE_COMMAND_LOGIC_LEVEL;
-			_spi->write(command);
-			_data_command = SPI4WIRE_DATA_LOGIC_LEVEL;
-			_spi->write((const char*) params, num_params, NULL, 0);
-			_chip_select = 1;
-			_spi->unlock();
-		}
-
-		/**
-		 * Write data out in bytes
-		 *
-		 * @param[in] data Bytes to write out
-		 * @param[in] length Number of bytes to write
-		 */
-		virtual void write_data(const uint8_t* data, uint32_t length)
-		{
-			_spi->lock();
-			_chip_select = 0;
-			_data_command = SPI4WIRE_DATA_LOGIC_LEVEL;
-			_spi->write((const char*) data, length, NULL, 0);
-			_chip_select = 1;
-			_spi->unlock();
-		}
-
-		/**
-		 * Write data out in shorts (16-bit)
-		 *
-		 * @param[in] data Data to write out
-		 * @param[in] length Number of shorts (16-bit) to write out
-		 */
-		virtual void write_data(const uint16_t* data, uint32_t length)
-		{
-			this->write_data((const uint8_t*) data, (length << 1));
-		}
-
-
-		/**
-		 * Write data out in words (32-bit)
-		 *
-		 * @param[in] data Data to write out
-		 * @param[in] length Number of words (32-bit) to write out
-		 */
-		virtual void write_data(const uint32_t* data, uint32_t length)
-		{
-			this->write_data((const uint8_t*) data, (length << 2));
-		}
-
-		/**
-		 * Read a byte from the interface
-		 *
-		 * @note not supported by 4-wire SPI
-		 */
-		virtual uint8_t read(void) { return 0; }
 
 	protected:
 

@@ -62,8 +62,24 @@ class ST7789Display : public DisplayDriver
 		 */
 		void write_data(uint8_t* data, int32_t len);
 
+		/**
+		 * Sets the scanline that the tearing effect output
+		 * is triggered on
+		 */
+		void set_tearing_effect_scanline(uint16_t row);
+
 		// Not supported currently
 		//void start_ram_read(void);
+
+		/**
+		 * Turn the display on
+		 */
+		void display_on(void);
+
+		/**
+		 * Turn the display off
+		 */
+		void display_off(void);
 
 		/**
 		 * Sets address mode
