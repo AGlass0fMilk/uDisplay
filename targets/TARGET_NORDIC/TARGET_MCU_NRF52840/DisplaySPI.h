@@ -24,8 +24,9 @@ static const nrfx_spim_t m_spi_master_3 = NRFX_SPIM_INSTANCE(3);
 
 extern "C" {
 	void nrfx_spim_3_irq_handler(void);
-	void spim3_event_handler(nrfx_spim_evt_t const * p_event, void * p_context);
 }
+
+static void spim3_event_handler(nrfx_spim_evt_t const * p_event, void * p_context);
 
 /**
  * Hardware-accelerated SPI4Wire interface
