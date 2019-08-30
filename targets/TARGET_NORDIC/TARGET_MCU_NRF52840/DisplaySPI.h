@@ -119,8 +119,9 @@ class DisplaySPI : public DisplayInterface
 			xfer_desc.p_tx_buffer = buffer;
 			xfer_desc.rx_length = 0;
 			xfer_desc.tx_length = buf_len;
+			spim_done_evt.clear();
 			nrfx_spim_xfer_dcx(&m_spi_master_3, &xfer_desc, 0, num_cmd_bytes);
-			//wait_for_xfer_done();
+			wait_for_xfer_done();
 		}
 
 		/**
@@ -153,8 +154,10 @@ class DisplaySPI : public DisplayInterface
 		 * Blocks the calling thread until a transfer is done
 		 */
 		void wait_for_xfer_done(void) {
-			spim_done_evt.clear(0x1);
-			spim_done_evt.wait_any(0x1);
+			/** If it hasn't happened yet, wait for it */
+			if(!spim_done_evt.clear()) {
+				spim_done_evt.wait_any(0xff);
+			}
 		}
 
 		mbed::Callback<void(nrfx_spim_evt_t const *)> user_callback;
