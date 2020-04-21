@@ -17,7 +17,7 @@
 
 #include "NoritakeVFD.h"
 
-#include "platform/mbed_wait_api.h"
+#include "rtos/ThisThread.h"
 
 NoritakeVFD::NoritakeVFD(DisplayInterface& interface,
 		PinName reset, uint32_t height, uint32_t width) :
@@ -50,7 +50,7 @@ void NoritakeVFD::reset(void) {
 	if(_reset != NULL) {
 		// Pulse reset low
 		*_reset = 0;
-		wait_ms(2);
+		rtos::ThisThread::sleep_for(2);
 		*_reset = 1;
 	}
 }
