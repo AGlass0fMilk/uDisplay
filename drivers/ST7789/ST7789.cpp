@@ -18,7 +18,7 @@
 
 #include "ST7789.h"
 
-#include "platform/mbed_wait_api.h"
+#include "rtos/ThisThread.h"
 
 ST7789Display::ST7789Display(DisplayInterface& interface,
 		PinName reset, PinName backlight) : DisplayDriver(interface),
@@ -35,16 +35,16 @@ void ST7789Display::init(void)
 {
 	// Hardware reset
 	_reset = 0;
-	wait_ms(10);
+        rtos::ThisThread::sleep_for(10);
 	_reset = 1;
-	wait_ms(10);
+        rtos::ThisThread::sleep_for(10);
 
 	// Software reset
 	_interface.write(ST77XX_SWRESET);
-	wait_ms(100);
+        rtos::ThisThread::sleep_for(100);
 	// Out of sleep mode
 	_interface.write(ST77XX_SLPOUT);
-	wait_ms(100);
+        rtos::ThisThread::sleep_for(100);
 
 	uint8_t buf[8];
 
@@ -52,12 +52,13 @@ void ST7789Display::init(void)
 	buf[0] = ST77XX_COLMOD;
 	buf[1] = 0x55;
 	_interface.write(buf, 1, 2);
-	wait_ms(10);
+	rtos::ThisThread::sleep_for(10);
 
 	// Set memory access control
 	buf[0] = ST77XX_MADCTL;
 	buf[1] = 0x00;
 	_interface.write(buf, 1, 2);
+	rtos::ThisThread::sleep_for(10);
 
 	// Set column address
 /*	buf[0] = 0x00; // Start address high byte
@@ -71,11 +72,11 @@ void ST7789Display::init(void)
 
 	// Normal display on
 	_interface.write(ST77XX_NORON);
-	wait_ms(10);
+	rtos::ThisThread::sleep_for(10);
 
 	// Display on
-	_interface.write(ST77XX_DISPON);
-	wait_ms(100);
+	//_interface.write(ST77XX_DISPON);
+	//rtos::ThisThread::sleep_for(100);
 
 }
 
@@ -107,6 +108,30 @@ void ST7789Display::set_row_address(uint16_t start, uint16_t end)
 
 void ST7789Display::start_ram_write(void) {
 	_interface.write(ST77XX_RAMWR);
+}
+
+void ST7789Display::display_on(void) {
+	_interface.write(ST77XX_DISPON);
+}
+
+void ST7789Display::display_off(void) {
+	_interface.write(ST77XX_DISPOFF);
+}
+
+void ST7789Display::write_data(uint8_t* data, int32_t len) {
+	_interface.write(data, 0, len);
+}
+
+void ST7789Display::set_tearing_effect_scanline(uint16_t row) {
+
+	// Set the tearing effect to trigger on the desired row
+	uint8_t buf[3] = {
+			(uint8_t)(ST77XX_TESCAN),
+			(uint8_t)((row & 0xFF)),
+			(uint8_t)((row & 0xFF00) >> 8)
+	};
+
+	_interface.write(buf, 1, 3);
 }
 
 void ST7789Display::set_address_mode(uint8_t mode) {

@@ -18,7 +18,7 @@
 #include "HX8357D.h"
 #include "hx8357d_registers.h"
 
-#include "platform/mbed_wait_api.h"
+#include "rtos/ThisThread.h"
 
 void HX8357D::init(void) {
 
@@ -26,10 +26,10 @@ void HX8357D::init(void) {
 
 	// Issue a soft reset and wait a moment
 	this->reset();
-	wait_ms(10);
+	rtos::ThisThread::sleep_for(10);
 
 	this->set_extc();
-	wait_ms(10);
+	rtos::ThisThread::sleep_for(10);
 
 	// Set RGB
 	buffer[0] = 0;
@@ -88,10 +88,10 @@ void HX8357D::init(void) {
 	// TEARLINE(0x00, 0x02)
 	// SLPOUT
 	this->exit_sleep_mode();
-	wait_ms(150);
+	rtos::ThisThread::sleep_for(150);
 
 	this->display_on();
-	wait_ms(50);
+	rtos::ThisThread::sleep_for(50);
 }
 
 void HX8357D::reset(void) {
