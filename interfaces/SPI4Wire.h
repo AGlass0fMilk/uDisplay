@@ -46,14 +46,15 @@ class SPI4Wire : public DisplayInterface
 		 * @note This constructor does not allow a shared SPI bus
 		 *
 		 * @param[in] mosi MOSI pin for interface
+		 * @param[in] miso MISO pin for interface
 		 * @param[in] sclk SCLK pin for interface
 		 * @param[in] cs Chip select pin for interface
 		 * @param[in] dc Data/Command pin for interface
 		 */
-		SPI4Wire(PinName mosi, PinName sclk, PinName cs, PinName dc) :
+		SPI4Wire(PinName mosi, PinName miso, PinName sclk, PinName cs, PinName dc) :
 			_chip_select(cs, 1), _data_command(dc, 0), _shared_bus(false)
 		{
-			_spi = new mbed::SPI(mosi, NC, sclk, NC);
+			_spi = new mbed::SPI(mosi, miso, sclk, NC);
 		}
 
 		/**
