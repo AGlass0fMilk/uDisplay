@@ -137,6 +137,26 @@ class SPI4Wire : public DisplayInterface
 			_spi->frequency(hz);
 		}
 
+
+		/** Configure the data transmission format.
+		 *
+		 *  @param bits Number of bits per SPI frame (4 - 16).
+		 *  @param mode Clock polarity and phase mode (0 - 3).
+		 *
+		 * @code
+		 * mode | POL PHA
+		 * -----+--------
+		 *   0  |  0   0
+		 *   1  |  0   1
+		 *   2  |  1   0
+		 *   3  |  1   1
+		 * @endcode
+		 */
+		void format(int bits, int mode = 0)
+		{
+			_spi->format(bits, mode);
+		}
+
 	protected:
 
 		/** Interface SPI bus handle */
